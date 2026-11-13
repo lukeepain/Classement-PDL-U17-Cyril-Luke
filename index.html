@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Classement U17 – Ligue d’Aviron des Pays de la Loire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style id="app-style">
+:root{--navy:#0b1f3a;--navy2:#143561;--river:#0e8a9a;--river-l:#e3f3f5;--bg:#f3f5f9;--card:#fff;--ink:#14213a;--muted:#647189;--line:#e2e7ee;
+--H:#2b7fd4;--H-l:#e7f0fb;--F:#bd4ea9;--F-l:#f8e8f4;--d1:#c9970e;--d1-l:#fcf4dc;--d2:#7f8ca0;--d2-l:#eef1f5;--d3:#b5693a;--d3-l:#f8ebe2;--d4:#4f7397;--d4-l:#e6eef6;--j:#e0892b;--j-l:#fdf0e1;--ok:#1d9a5b;--err:#d33f3f;--acc:var(--H);--acc-l:var(--H-l)}
+body.sex-F{--acc:var(--F);--acc-l:var(--F-l)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Barlow,system-ui,sans-serif;font-size:15px;line-height:1.45}
+h1,h2,h3,.cond{font-family:"Barlow Condensed",Barlow,sans-serif;letter-spacing:.01em}
+button{font:inherit;cursor:pointer}
+input,select,textarea{font:inherit;color:inherit}
+.num{font-variant-numeric:tabular-nums}
+.wrap{max-width:1180px;margin:0 auto;padding:0 20px}
+/* export pdf */
+.btn-pdf{border:1px solid rgba(255,255,255,.35);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:7px 14px;font-weight:600}
+.btn-pdf:hover{background:rgba(255,255,255,.18)}
+.ovl{position:fixed;inset:0;background:rgba(11,31,58,.45);display:grid;place-items:center;z-index:40;padding:16px}
+.dlg{background:#fff;border-radius:16px;padding:20px 22px;width:min(440px,100%);box-shadow:0 20px 50px rgba(0,0,0,.25)}
+.flbl{font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);margin:10px 0 6px}
+.opts{display:flex;flex-direction:column;gap:6px}
+.opts label{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:8px 12px;cursor:pointer}
+.opts label:has(input:checked){border-color:var(--acc);background:var(--acc-l)}
+/* header */
+.brand{background:#fff;border-bottom:1px solid var(--line)}
+.brand .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:10px;padding-bottom:10px}
+.brand img{height:46px;width:auto;display:block}
+.brand .bt{font-size:13px;color:var(--muted);font-weight:600;text-align:right;line-height:1.3}
+.brand .bt b{display:block;color:var(--navy);font-family:"Barlow Condensed";font-size:17px;letter-spacing:.02em}
+@media (max-width:600px){.brand img{height:34px}.brand .bt{display:none}}
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy2) 70%,#0e4d6b 100%);color:#fff;position:relative;overflow:hidden}
+.hero svg.waves{position:absolute;left:0;right:0;bottom:-2px;width:100%;height:60px;opacity:.18}
+.hero .wrap{position:relative;padding-top:22px;padding-bottom:18px}
+.toprow{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.kicker{text-transform:uppercase;letter-spacing:.14em;font-size:12px;opacity:.75;font-weight:600}
+.hero h1{margin:2px 0 2px;font-size:34px;line-height:1.05;font-weight:700}
+.hero h1 span{color:#74c6a6;display:block;font-size:.66em;margin-top:2px}
+.sub{opacity:.8;font-size:14px}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.seg{display:inline-flex;background:rgba(255,255,255,.1);border-radius:999px;padding:3px}
+.seg button{border:0;background:transparent;color:#fff;padding:7px 16px;border-radius:999px;font-weight:600;opacity:.8}
+.seg button.on{opacity:1;background:#fff}
+.seg button.on[data-sex=H]{color:var(--H)}.seg button.on[data-sex=F]{color:var(--F)}
+.btn-edit{border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;border-radius:999px;padding:7px 14px;font-weight:600}
+.btn-edit.on{background:#ffd35c;color:var(--navy);border-color:#ffd35c}
+/* timeline */
+.tl{display:flex;margin-top:18px;gap:0;align-items:stretch}
+.tl .step{flex:1;position:relative;padding-top:16px;min-width:0}
+.tl .step:before{content:"";position:absolute;top:5px;left:0;right:0;height:2px;background:rgba(255,255,255,.22)}
+.tl .step:first-child:before{left:7px}.tl .step:last-child:before{right:auto;width:7px}
+.tl .dot{position:absolute;top:0;left:0;width:12px;height:12px;border-radius:50%;background:var(--navy);border:2px solid rgba(255,255,255,.5)}
+.tl .step.done .dot{background:#7fd6e0;border-color:#7fd6e0}
+.tl .step.next .dot{background:#ffd35c;border-color:#ffd35c;box-shadow:0 0 0 4px rgba(255,211,92,.25)}
+.tl .step.final .dot{background:#fff;border-color:#fff;width:14px;height:14px;top:-1px}
+.tl .lbl{font-size:13px;font-weight:600;padding-right:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tl .dt{font-size:12px;opacity:.7}
+/* tabs */
+.tabsbar{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}
+.tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;padding:13px 14px 11px;border-bottom:3px solid transparent;color:var(--muted);font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:7px}
+.tab:hover{color:var(--ink)}
+.tab.on{color:var(--ink);border-bottom-color:var(--acc)}
+.tab svg{width:18px;height:18px;flex:none}
+.tab .cnt{font-size:11px;background:var(--bg);border-radius:999px;padding:1px 7px;color:var(--muted)}
+.tab.on .cnt{background:var(--acc-l);color:var(--acc)}
+.tabsep{width:1px;background:var(--line);margin:10px 6px}
+main{padding:22px 0 90px}
+/* cards */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin-bottom:16px}
+.card h2{margin:0 0 4px;font-size:24px}
+.card h3{margin:0 0 8px;font-size:19px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.kpi{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.kpi .k{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:600}
+.kpi .v{font-family:"Barlow Condensed";font-size:30px;font-weight:700;line-height:1.1}
+.kpi .s{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi.acc{background:var(--acc);color:#fff;border-color:var(--acc)}
+.kpi.acc .k,.kpi.acc .s{color:rgba(255,255,255,.85)}
+.banner{display:flex;gap:10px;align-items:center;background:var(--j-l);border:1px solid #f3d3ab;color:#7a4a12;border-radius:12px;padding:10px 14px;margin-bottom:16px;font-size:14px}
+.banner.info{background:var(--river-l);border-color:#bfe3e8;color:#0b5560}
+.sectionhead{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.search{border:1px solid var(--line);border-radius:10px;padding:8px 12px;min-width:220px;background:#fff}
+/* tables */
+.tblwrap{overflow-x:auto;background:#fff;border:1px solid var(--line);border-radius:14px}
+table{border-collapse:collapse;width:100%}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);background:#fafbfd;white-space:nowrap}
+td{padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+th.r,td.r{text-align:right}th.c,td.c{text-align:center}
+.pos{font-family:"Barlow Condensed";font-weight:700;font-size:20px;width:46px}
+.name{font-weight:600}
+.club{font-size:12.5px;color:var(--muted)}
+.tot{font-family:"Barlow Condensed";font-weight:700;font-size:20px}
+.pts{font-weight:600}
+.pts small{display:block;font-weight:500;color:var(--muted);font-size:11.5px}
+.dash{color:#b6bfcc}
+.ergo-off{color:#a4adbb;text-decoration:line-through;text-decoration-color:#c7cfd9}
+.ergo-on{color:var(--river);font-weight:700}
+tr.grp td{background:#f7f9fc;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;padding:7px 12px;color:var(--muted)}
+tr.grp.d1 td{background:var(--d1-l);color:#8a6806}tr.grp.d2 td{background:var(--d2-l);color:#56637a}tr.grp.d3 td{background:var(--d3-l);color:#8a4a22}tr.grp.d4 td{background:var(--d4-l);color:#36577a}tr.grp.j td{background:var(--j-l);color:#94560f}
+.bdg{display:inline-block;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;white-space:nowrap}
+.b-d1{background:var(--d1-l);color:#8a6806;border:1px solid #efd88f}
+.b-d2{background:var(--d2-l);color:#4d5a70;border:1px solid #d3d9e2}
+.b-d3{background:var(--d3-l);color:#8a4a22;border:1px solid #e9c8b2}
+.b-d4{background:var(--d4-l);color:#36577a;border:1px solid #c5d6e7}
+.b-j{background:var(--j-l);color:#94560f;border:1px solid #f1cf9f}
+.b-jk{background:var(--navy);color:#fff}
+.medal{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;font-family:"Barlow Condensed";font-weight:700;font-size:16px;color:#fff}
+.m1{background:linear-gradient(135deg,#e7bb2c,#b98a07)}.m2{background:linear-gradient(135deg,#b7c0cc,#7f8ca0)}.m3{background:linear-gradient(135deg,#d38a55,#a35a2c)}
+.chip{display:inline-block;border-radius:999px;padding:2px 9px;font-size:12.5px;font-weight:700;background:var(--river-l);color:var(--river)}
+.bar{height:6px;background:var(--bg);border-radius:4px;overflow:hidden;width:70px;display:inline-block;vertical-align:middle;margin-left:8px}
+.bar i{display:block;height:100%;background:var(--acc);border-radius:4px}
+/* event header */
+.evhead{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+.evicon{width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--acc-l);color:var(--acc);flex:none}
+.evicon svg{width:32px;height:32px}
+.evhead .meta{display:flex;gap:18px;flex-wrap:wrap;margin-left:auto}
+.evhead .meta div{text-align:right}
+.evhead .meta b{display:block;font-family:"Barlow Condensed";font-size:22px}
+.evhead .meta span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em}
+.empty{text-align:center;padding:46px 20px;color:var(--muted)}
+.empty svg{width:56px;height:56px;opacity:.35;margin-bottom:6px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+/* bonus legend */
+.tiers{display:flex;gap:6px;flex-wrap:wrap}
+.tier{flex:1;min-width:92px;border:1px solid var(--line);border-radius:10px;padding:8px 10px;background:#fff}
+.tier .t{font-size:12.5px;color:var(--muted)}
+.tier .p{font-family:"Barlow Condensed";font-size:22px;font-weight:700;color:var(--river)}
+.tier .n{font-size:12px;color:var(--muted)}
+/* rules */
+.pts-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pts-grid div{background:var(--bg);border-radius:8px;padding:6px 8px;display:flex;justify-content:space-between;font-size:14px}
+.pts-grid b{font-variant-numeric:tabular-nums}
+.rule{display:flex;gap:12px;margin:10px 0}
+.rule .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--acc-l);color:var(--acc);font-weight:700;display:grid;place-items:center;font-family:"Barlow Condensed";font-size:17px}
+.formula{background:var(--navy);color:#fff;border-radius:12px;padding:14px 16px;font-family:"Barlow Condensed";font-size:20px;letter-spacing:.02em}
+.formula em{font-style:normal;color:#7fd6e0}
+.btable td,.btable th{padding:6px 10px}
+.div-strip{display:flex;border-radius:10px;overflow:hidden;margin-top:8px;font-size:13px;font-weight:600}
+.div-strip div{padding:8px 10px;text-align:center}
+/* finale */
+.divcard{border-radius:14px;border:1px solid var(--line);background:#fff;overflow:hidden;display:flex;flex-direction:column}
+.divcard .dh{padding:12px 16px;display:flex;align-items:baseline;justify-content:space-between}
+.divcard .dh h3{margin:0;font-size:24px}
+.divcard.d1 .dh{background:var(--d1-l)}.divcard.d2 .dh{background:var(--d2-l)}.divcard.d3 .dh{background:var(--d3-l)}.divcard.d4 .dh{background:var(--d4-l)}
+.divcard ol{list-style:none;margin:0;padding:6px 0}
+.divcard li{display:flex;gap:10px;align-items:center;padding:6px 16px}
+.divcard li .p{width:26px;font-family:"Barlow Condensed";font-weight:700;font-size:17px;color:var(--muted)}
+.divcard li .nm{flex:1;min-width:0}
+.divcard li .nm div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.divcard .sub2{padding:8px 16px 4px;font-size:12px;text-transform:uppercase;letter-spacing:.08em;font-weight:700;color:var(--muted);border-top:1px dashed var(--line)}
+.slot{margin:4px 16px;border:1.5px dashed #cfd6e0;border-radius:8px;padding:6px 10px;color:#9aa5b5;font-size:13px}
+/* edit */
+.editbox{border:2px dashed #ffd35c;background:#fffcf0;border-radius:14px;padding:16px 18px;margin-bottom:16px}
+.editbox h3{margin:0 0 6px}
+textarea{width:100%;min-height:120px;border:1px solid var(--line);border-radius:10px;padding:10px;font-family:ui-monospace,Menlo,monospace;font-size:13px;background:#fff}
+.inp{border:1px solid var(--line);border-radius:8px;padding:6px 9px;background:#fff;width:100%}
+.inp.time{width:110px;text-align:right;font-variant-numeric:tabular-nums}
+.inp.err{border-color:var(--err);background:#fff3f3}
+.inp.ok{border-color:#9fd8bb}
+.btn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 14px;font-weight:600}
+.btn.pri{background:var(--acc);border-color:var(--acc);color:#fff}
+.btn.dark{background:var(--navy);border-color:var(--navy);color:#fff}
+.btn.danger{color:var(--err)}
+.btn.danger.arm{background:var(--err);color:#fff;border-color:var(--err)}
+.btn.sm{padding:4px 10px;font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.savebar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%) translateY(120px);background:var(--navy);color:#fff;border-radius:999px;padding:8px 8px 8px 20px;display:flex;gap:14px;align-items:center;box-shadow:0 10px 30px rgba(11,31,58,.3);transition:transform .25s;z-index:20;font-weight:500}
+.savebar.show{transform:translateX(-50%) translateY(0)}
+.savebar button{border:0;background:#ffd35c;color:var(--navy);border-radius:999px;padding:8px 16px;font-weight:700}
+.toast{position:fixed;top:16px;left:50%;transform:translateX(-50%) translateY(-90px);background:#fff;border:1px solid var(--line);box-shadow:0 8px 24px rgba(0,0,0,.12);border-radius:12px;padding:10px 16px;z-index:30;transition:transform .25s;font-weight:500;max-width:90vw}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.foot{color:var(--muted);font-size:12.5px;text-align:center;margin-top:24px}
+@media (max-width:860px){.kpis{grid-template-columns:1fr 1fr}.grid2,.grid3{grid-template-columns:1fr}.pts-grid{grid-template-columns:repeat(4,1fr)}.hero h1{font-size:27px}.tl .lbl{font-size:11.5px}.tl .dt{font-size:11px}.evhead .meta{margin-left:0}.evhead .meta div{text-align:left}}
+@media (max-width:520px){.tl .lbl{white-space:normal}.pts-grid{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body class="sex-H">
+<div id="app"></div>
+<div id="savebar"></div>
+<div id="toast" class="toast"></div>
+<script type="application/json" id="state">{"version": 2, "athletes": [{"id": "h-bregeon-josef", "nom": "BREGEON Josef", "club": "ANGERS ANA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-brunet-aloys", "nom": "BRUNET Aloys", "club": "ANGERS ANA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-berton-marin", "nom": "BERTON Marin", "club": "ANGERS ANA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-chavanes-eloi", "nom": "CHAVANES Eloi", "club": "ANGERS ANA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-gazan-antoine", "nom": "GAZAN Antoine", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-naux-maxime", "nom": "NAUX Maxime", "club": "NANTES UNA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-de-beaurepaire-gabriel", "nom": "DE BEAUREPAIRE Gabriel", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-barbotin-marin", "nom": "BARBOTIN Marin", "club": "LE MANS MSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-soulard-joe", "nom": "SOULARD Joe", "club": "NANTES UNA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-castellano-cesar", "nom": "CASTELLANO Cesar", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-vassallo-gabriel", "nom": "VASSALLO Gabriel", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-moriceau-lamour-paul", "nom": "MORICEAU LAMOUR Paul", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-le-grelle-louis", "nom": "LE GRELLE Louis", "club": "LE MANS MSA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-bour-joseph", "nom": "BOUR Joseph", "club": "NANTES UNA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-foucher-mathurin", "nom": "FOUCHER Mathurin", "club": "SAUMUR SNSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-boyer-jules", "nom": "BOYER Jules", "club": "ANGERS ANA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-lepinay-bachari-nael", "nom": "LEPINAY BACHARI Nael", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-aschard-francois", "nom": "ASCHARD François", "club": "SAUMUR SNSA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-lattaignant-malo", "nom": "LATTAIGNANT Malo", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-le-breton-benjamin", "nom": "LE BRETON Benjamin", "club": "LE MANS MSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-moreau-adam", "nom": "MOREAU Adam", "club": "NANTES CLL", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-le-gall-antoine", "nom": "LE GALL Antoine", "club": "LE MANS MSA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-hetreau-elie", "nom": "HETREAU Elie", "club": "ANGERS ANA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-gendry-maxym", "nom": "GENDRY Maxym", "club": "ANGERS ANA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-bouamar-faris", "nom": "BOUAMAR Faris", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-le-falher-augustin", "nom": "LE FALHER Augustin", "club": "LAVAL CNL", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-dion-maxime", "nom": "DION Maxime", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-nourtier-yanael", "nom": "NOURTIER Yanael", "club": "ANGERS ANA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-favre-william", "nom": "FAVRE William", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-thibault-marius", "nom": "THIBAULT Marius", "club": "ST-NAZAIRE SNOSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-mayeux-felix", "nom": "MAYEUX Félix", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-delacour-antoine", "nom": "DELACOUR Antoine", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-raguenel-victor", "nom": "RAGUENEL Victor", "club": "LE MANS MSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-muselier-ulysse", "nom": "MUSELIER Ulysse", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-finat-duclos-bruno", "nom": "FINAT-DUCLOS Bruno", "club": "LE MANS MSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-vanhersecke-timothe", "nom": "VANHERSECKE Timothé", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-pelerbe-gabriel", "nom": "PELERBE Gabriel", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-remy-jarod", "nom": "REMY Jarod", "club": "LE MANS MSA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-le-denmat-edgar", "nom": "LE DENMAT Edgar", "club": "ANGERS ANA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-boutillier-charles", "nom": "BOUTILLIER Charles", "club": "NANTES UNA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-pacault-raphael", "nom": "PACAULT Raphaël", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-decosse-natheo", "nom": "DECOSSE Natheo", "club": "LE MANS MSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-malot-gaspard", "nom": "MALOT Gaspard", "club": "LAVAL CNL", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-pasquier-raze-aubin", "nom": "PASQUIER RAZE Aubin", "club": "NANTES CAN", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-loisant-akito", "nom": "LOISANT Akito", "club": "NANTES UNA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-cadeau-jules", "nom": "CADEAU Jules", "club": "ANGERS ANA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-malfilatre-nahil", "nom": "MALFILATRE Nahil", "club": "ST-NAZAIRE SNOSA", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-zamaouch-sofiane", "nom": "ZAMAOUCH Sofiane", "club": "ST-NAZAIRE SNOSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-crochet-baptiste", "nom": "CROCHET Baptiste", "club": "LAVAL CNL", "cat": "J16", "sexe": "H", "joker": null}, {"id": "h-moriyama-mario", "nom": "MORIYAMA Mario", "club": "ST-NAZAIRE SNOSA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-moulinas-theophile", "nom": "MOULINAS Théophile", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-vuillefroy-de-silly-arthur", "nom": "VUILLEFROY DE SILLY Arthur", "club": "NANTES CAN", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-froger-derosier-tom", "nom": "FROGER DEROSIER Tom", "club": "NANTES CLL", "cat": "J15", "sexe": "H", "joker": null}, {"id": "h-dumonteil-come", "nom": "DUMONTEIL Come", "club": "ANGERS ANA", "cat": "J15", "sexe": "H", "joker": null}, {"id": "f-caron-adele", "nom": "CARON Adele", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-quentin-louise", "nom": "QUENTIN Louise", "club": "SAUMUR SNSA", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-defontaine-sibylle", "nom": "DEFONTAINE Sibylle", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-guillet-ines", "nom": "GUILLET Inès", "club": "SAUMUR SNSA", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-breuillaud-maiwenn", "nom": "BREUILLAUD Maiwenn", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-lecoq-yael", "nom": "LECOQ Yaël", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-billy-paula", "nom": "BILLY Paula", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-verdier-zoe", "nom": "VERDIER Zoé", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-guyetant-parrot-manon", "nom": "GUYETANT PARROT Manon", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-morizon-piazza-lilwenn", "nom": "MORIZON PIAZZA Lilwenn", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-letellier-lucie", "nom": "LETELLIER Lucie", "club": "LAVAL CNL", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-lemaire-adele", "nom": "LEMAIRE Adèle", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-le-mintier-colette", "nom": "LE MINTIER Colette", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-perrin-clementine", "nom": "PERRIN Clémentine", "club": "LE MANS MSA", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-devys-marie", "nom": "DEVYS Marie", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-gravier-lou-ann", "nom": "GRAVIER Lou-Ann", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-billy-emmie", "nom": "BILLY Emmie", "club": "NANTES CAN", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-loisel-rose", "nom": "LOISEL Rose", "club": "LE MANS MSA", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-rahmani-yasmine", "nom": "RAHMANI Yasmine", "club": "ST-NAZAIRE SNOSA", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-ricou-fanny", "nom": "RICOU Fanny", "club": "LAVAL CNL", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-le-du-louise", "nom": "LE DU Louise", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-menant-emma", "nom": "MENANT Emma", "club": "ANGERS ANA", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-gegaden-solenn", "nom": "GEGADEN Solenn", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-collineau-angele", "nom": "COLLINEAU Angele", "club": "ANGERS ANA", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-tavernier-margot", "nom": "TAVERNIER Margot", "club": "ST-NAZAIRE SNOSA", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-phelouzat-josephine", "nom": "PHELOUZAT Josephine", "club": "ANGERS ANA", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-guichard-ambre", "nom": "GUICHARD Ambre", "club": "ANGERS ANA", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-monnet-lyia", "nom": "MONNET Lyia", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-cattaneo-alice", "nom": "CATTANEO Alice", "club": "NANTES CLL", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-bussonnais-melilli-erica", "nom": "BUSSONNAIS-MELILLI Erica", "club": "ST-NAZAIRE SNOSA", "cat": "J15", "sexe": "F", "joker": null}, {"id": "f-gilles-maelle", "nom": "GILLES Maelle", "club": "NANTES CLL", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-lutz-olivia", "nom": "LUTZ Olivia", "club": "NANTES CLL", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-tuffier-clemence", "nom": "TUFFIER Clemence", "club": "NANTES CAN", "cat": "J16", "sexe": "F", "joker": null}, {"id": "f-moulin-anouk", "nom": "MOULIN Anouk", "club": "ANGERS ANA", "cat": "J16", "sexe": "F", "joker": null}], "results": {"tdr1": {"h-bregeon-josef": {"t": 536.3, "place": 1, "gap": 0, "pct": 74.96}, "h-brunet-aloys": {"t": 543.2, "place": 2, "gap": 6.9, "pct": 74.01}, "h-berton-marin": {"t": 546.5, "place": 3, "gap": 10.2, "pct": 73.56}, "h-chavanes-eloi": {"t": 559.7, "place": 4, "gap": 23.4, "pct": 71.82}, "h-gazan-antoine": {"t": 560.5, "place": 5, "gap": 24.2, "pct": 71.72}, "h-naux-maxime": {"t": 567.0, "place": 6, "gap": 30.7, "pct": 70.9}, "h-de-beaurepaire-gabriel": {"t": 567.8, "place": 7, "gap": 31.5, "pct": 70.8}, "h-barbotin-marin": {"t": 568.3, "place": 8, "gap": 32.0, "pct": 70.74}, "h-soulard-joe": {"t": 569.7, "place": 9, "gap": 33.3, "pct": 70.56}, "h-castellano-cesar": {"t": 570.4, "place": 10, "gap": 34.1, "pct": 70.48}, "h-vassallo-gabriel": {"t": 576.7, "place": 11, "gap": 40.4, "pct": 69.71}, "h-moriceau-lamour-paul": {"t": 577.8, "place": 12, "gap": 41.5, "pct": 69.57}, "h-le-grelle-louis": {"t": 578.5, "place": 13, "gap": 42.1, "pct": 69.49}, "h-bour-joseph": {"t": 580.2, "place": 14, "gap": 43.9, "pct": 69.29}, "h-foucher-mathurin": {"t": 580.8, "place": 15, "gap": 44.5, "pct": 69.21}, "h-boyer-jules": {"t": 581.5, "place": 16, "gap": 45.2, "pct": 69.13}, "h-lepinay-bachari-nael": {"t": 584.0, "place": 17, "gap": 47.7, "pct": 68.84}, "h-aschard-francois": {"t": 585.1, "place": 18, "gap": 48.8, "pct": 68.71}, "h-lattaignant-malo": {"t": 588.1, "place": 19, "gap": 51.8, "pct": 68.36}, "h-le-breton-benjamin": {"t": 590.3, "place": 20, "gap": 54.0, "pct": 68.1}, "h-moreau-adam": {"t": 590.4, "place": 21, "gap": 54.1, "pct": 68.09}, "h-le-gall-antoine": {"t": 592.4, "place": 22, "gap": 56.1, "pct": 67.86}, "h-hetreau-elie": {"t": 592.6, "place": 23, "gap": 56.3, "pct": 67.84}, "h-gendry-maxym": {"t": 594.0, "place": 24, "gap": 57.7, "pct": 67.68}, "h-bouamar-faris": {"t": 596.1, "place": 25, "gap": 59.8, "pct": 67.44}, "h-le-falher-augustin": {"t": 597.4, "place": 26, "gap": 61.1, "pct": 67.29}, "h-dion-maxime": {"t": 597.6, "place": 27, "gap": 61.3, "pct": 67.27}, "h-nourtier-yanael": {"t": 602.4, "place": 28, "gap": 66.1, "pct": 66.73}, "h-favre-william": {"t": 604.4, "place": 29, "gap": 68.1, "pct": 66.51}, "h-thibault-marius": {"t": 612.0, "place": 30, "gap": 75.7, "pct": 65.69}, "h-mayeux-felix": {"t": 615.8, "place": 31, "gap": 79.5, "pct": 65.28}, "h-delacour-antoine": {"t": 616.6, "place": 32, "gap": 80.3, "pct": 65.2}, "h-raguenel-victor": {"t": 620.2, "place": 33, "gap": 83.9, "pct": 64.82}, "h-muselier-ulysse": {"t": 623.8, "place": 34, "gap": 87.5, "pct": 64.44}, "h-finat-duclos-bruno": {"t": 624.4, "place": 35, "gap": 88.1, "pct": 64.38}, "h-vanhersecke-timothe": {"t": 626.7, "place": 36, "gap": 90.4, "pct": 64.15}, "h-pelerbe-gabriel": {"t": 627.0, "place": 37, "gap": 90.7, "pct": 64.11}, "h-remy-jarod": {"t": 634.5, "place": 38, "gap": 98.1, "pct": 63.36}, "h-le-denmat-edgar": {"t": 640.1, "place": 39, "gap": 103.8, "pct": 62.8}, "h-boutillier-charles": {"t": 640.1, "place": 40, "gap": 103.8, "pct": 62.8}, "h-pacault-raphael": {"t": 650.6, "place": 41, "gap": 114.3, "pct": 61.79}, "h-decosse-natheo": {"t": 658.7, "place": 42, "gap": 122.4, "pct": 61.03}, "h-malot-gaspard": {"t": 660.2, "place": 43, "gap": 123.9, "pct": 60.89}, "h-pasquier-raze-aubin": {"t": 660.7, "place": 44, "gap": 124.4, "pct": 60.84}, "h-loisant-akito": {"t": 671.4, "place": 45, "gap": 135.1, "pct": 59.87}, "h-cadeau-jules": {"t": 673.2, "place": 46, "gap": 136.8, "pct": 59.71}, "h-malfilatre-nahil": {"t": 673.3, "place": 47, "gap": 137.0, "pct": 59.71}, "h-zamaouch-sofiane": {"t": 680.4, "place": 48, "gap": 144.1, "pct": 59.08}, "h-crochet-baptiste": {"t": 693.4, "place": 49, "gap": 157.0, "pct": 57.98}, "h-moriyama-mario": {"t": 696.8, "place": 50, "gap": 160.5, "pct": 57.69}, "h-moulinas-theophile": {"t": 701.7, "place": 51, "gap": 165.4, "pct": 57.29}, "h-vuillefroy-de-silly-arthur": {"t": 721.0, "place": 52, "gap": 184.7, "pct": 55.76}, "h-froger-derosier-tom": {"t": 735.8, "place": 53, "gap": 199.5, "pct": 54.63}, "h-dumonteil-come": {"t": 855.1, "place": 54, "gap": 318.8, "pct": 47.01}, "f-caron-adele": {"t": 585.7, "place": 1, "gap": 0, "pct": 75.29}, "f-quentin-louise": {"t": 597.3, "place": 2, "gap": 11.6, "pct": 73.83}, "f-defontaine-sibylle": {"t": 607.3, "place": 3, "gap": 21.6, "pct": 72.62}, "f-guillet-ines": {"t": 612.4, "place": 4, "gap": 26.7, "pct": 72.01}, "f-breuillaud-maiwenn": {"t": 617.8, "place": 5, "gap": 32.1, "pct": 71.38}, "f-lecoq-yael": {"t": 624.7, "place": 6, "gap": 39.1, "pct": 70.59}, "f-billy-paula": {"t": 630.4, "place": 7, "gap": 44.7, "pct": 69.96}, "f-verdier-zoe": {"t": 635.2, "place": 8, "gap": 49.5, "pct": 69.43}, "f-guyetant-parrot-manon": {"t": 636.4, "place": 9, "gap": 50.7, "pct": 69.3}, "f-morizon-piazza-lilwenn": {"t": 638.0, "place": 10, "gap": 52.3, "pct": 69.12}, "f-letellier-lucie": {"t": 640.7, "place": 11, "gap": 55.1, "pct": 68.83}, "f-lemaire-adele": {"t": 645.2, "place": 12, "gap": 59.5, "pct": 68.35}, "f-le-mintier-colette": {"t": 648.0, "place": 13, "gap": 62.3, "pct": 68.06}, "f-perrin-clementine": {"t": 653.5, "place": 14, "gap": 67.8, "pct": 67.48}, "f-devys-marie": {"t": 661.4, "place": 15, "gap": 75.7, "pct": 66.68}, "f-gravier-lou-ann": {"t": 664.7, "place": 16, "gap": 79.0, "pct": 66.35}, "f-billy-emmie": {"t": 669.5, "place": 17, "gap": 83.9, "pct": 65.87}, "f-loisel-rose": {"t": 669.7, "place": 18, "gap": 84.0, "pct": 65.85}, "f-rahmani-yasmine": {"t": 673.3, "place": 19, "gap": 87.7, "pct": 65.5}, "f-ricou-fanny": {"t": 676.7, "place": 20, "gap": 91.1, "pct": 65.17}, "f-le-du-louise": {"t": 678.4, "place": 21, "gap": 92.7, "pct": 65.01}, "f-menant-emma": {"t": 678.6, "place": 22, "gap": 92.9, "pct": 64.99}, "f-gegaden-solenn": {"t": 679.5, "place": 23, "gap": 93.9, "pct": 64.9}, "f-collineau-angele": {"t": 680.2, "place": 24, "gap": 94.6, "pct": 64.83}, "f-tavernier-margot": {"t": 698.7, "place": 25, "gap": 113.0, "pct": 63.12}, "f-phelouzat-josephine": {"t": 701.4, "place": 26, "gap": 115.7, "pct": 62.87}, "f-guichard-ambre": {"t": 702.1, "place": 27, "gap": 116.4, "pct": 62.81}, "f-monnet-lyia": {"t": 704.4, "place": 28, "gap": 118.8, "pct": 62.61}, "f-cattaneo-alice": {"t": 705.9, "place": 29, "gap": 120.3, "pct": 62.47}, "f-bussonnais-melilli-erica": {"t": 729.0, "place": 30, "gap": 143.3, "pct": 60.49}, "f-gilles-maelle": {"t": 745.2, "place": 31, "gap": 159.5, "pct": 59.18}, "f-lutz-olivia": {"t": 832.5, "place": 32, "gap": 246.8, "pct": 52.97}, "f-tuffier-clemence": {"dns": true}, "f-moulin-anouk": {"dns": true}}, "ergo1": {}, "tdr2": {}, "ergo2": {}}}</script>
+<script id="app-script">
+(function(){
+"use strict";
+var S = JSON.parse(document.getElementById('state').textContent);
+S.athletes = S.athletes || []; S.results = S.results || {};
+["tdr1","ergo1","tdr2","ergo2"].forEach(function(k){ if(!S.results[k]) S.results[k] = {}; });
+
+var LOGO="data:image/png;base64,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";
+var EVENTS = [
+  {id:"tdr1", slug:"tdr-angers", short:"TdR Angers", emoji:"🚣", name:"Tête de rivière d'Angers", date:"2026-11-07", label:"7 nov. 2026", type:"skiff"},
+  {id:"ergo1", slug:"indoor", short:"Chpt Régional Indoor", name:"Championnat régional indoor", date:"2026-12-06", label:"6 déc. 2026", type:"ergo"},
+  {id:"tdr2", slug:"tdr-nantes", short:"TdR Nantes", emoji:"🚣", name:"Tête de rivière de Nantes", date:"2027-01-17", label:"17 janv. 2027", type:"skiff"},
+  {id:"ergo2", slug:"test-ergo", short:"Ergo Février", name:"Ergo de février", date:"2027-02-07", label:"Février 2027", type:"ergo"}
+];
+var FINALE = {date:"2027-02-14", label:"14 févr. 2027"};
+var EV = {}; EVENTS.forEach(function(e){ EV[e.id]=e; });
+var PLACE = [200,190,180,170,160,150,140,130,128,126,124,122,120,118,116,114,112,110,108,106];
+function placePts(r){ return r<=20 ? PLACE[r-1] : Math.max(106-2*(r-20),1); }
+var TIERS = {
+  H:[{max:380,p:100,l:"< 6'20"},{max:390,p:80,l:"6'20 – 6'30"},{max:400,p:60,l:"6'30 – 6'40"},{max:410,p:50,l:"6'40 – 6'50"},{max:420,p:40,l:"6'50 – 7'00"},{max:430,p:20,l:"7'00 – 7'10"},{max:Infinity,p:5,l:"> 7'10"}],
+  F:[{max:440,p:100,l:"< 7'20"},{max:450,p:80,l:"7'20 – 7'30"},{max:460,p:60,l:"7'30 – 7'40"},{max:470,p:50,l:"7'40 – 7'50"},{max:480,p:40,l:"7'50 – 8'00"},{max:490,p:20,l:"8'00 – 8'10"},{max:Infinity,p:5,l:"> 8'10"}]
+};
+function tierIdx(t,sex){ var T=TIERS[sex]; for(var i=0;i<T.length;i++) if(t<T[i].max) return i; return T.length-1; }
+function bonus(t,sex){ return TIERS[sex][tierIdx(t,sex)].p; }
+
+var ui = {tab:"general", sex:"H", edit:false, dirty:false, q:""};
+try{ var ls = localStorage.getItem("u17pdl-ui"); if(ls){ ls=JSON.parse(ls); if(ls.sex) ui.sex=ls.sex; } }catch(e){}
+function saveUi(){ try{ localStorage.setItem("u17pdl-ui", JSON.stringify({sex:ui.sex})); }catch(e){} }
+
+/* ---------- utils ---------- */
+function esc(s){ return String(s==null?"":s).replace(/[&<>"']/g,function(c){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c];}); }
+function norm(s){ return String(s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9]+/g," ").trim(); }
+function uid(){ return "a"+Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
+function parseTime(s){
+  if(s==null) return null; s=String(s).trim(); if(!s) return null;
+  s=s.replace(/,/g,".").replace(/[’'′]/g,":").replace(/["″]/g,".").replace(/\s+/g,"").replace(/[hH]/g,":").replace(/\.$/,"").replace(/:$/,"");
+  if(s.indexOf(":")<0 && (s.match(/\./g)||[]).length===2){ s=s.replace(".",":"); }
+  if(!/^[0-9:.]+$/.test(s)) return NaN;
+  var parts=s.split(":"); var tot=0;
+  for(var i=0;i<parts.length;i++){ if(parts[i]==="") return NaN; var v=parseFloat(parts[i]); if(isNaN(v)) return NaN; if(i>0 && v>=60) return NaN; if(i<parts.length-1 && parts[i].indexOf(".")>=0) return NaN; tot=tot*60+v; }
+  if(tot<=0 || tot>4*3600) return NaN;
+  return Math.round(tot*10)/10;
+}
+function fmt(sec){
+  if(typeof sec!=="number"||isNaN(sec)) return "";
+  var t=Math.round(sec*10), h=Math.floor(t/36000), m=Math.floor((t%36000)/600), s=Math.floor((t%600)/10), d=t%10;
+  return (h? h+"h"+String(m).padStart(2,"0") : m)+"'"+String(s).padStart(2,"0")+'"'+d;
+}
+function fmtGap(sec){ return "+"+(sec<60? (Math.round(sec*10)/10).toFixed(1)+"s" : fmt(sec)); }
+function today(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function daysTo(iso){ var a=new Date(today()+"T00:00:00"), b=new Date(iso+"T00:00:00"); return Math.round((b-a)/86400000); }
+function ord(n){ return n===1?"1er":n+"e"; }
+
+/* ---------- calculs ---------- */
+function athletesOf(sex){ return S.athletes.filter(function(a){return a.sexe===sex;}); }
+function rt(v){ return v==null ? null : (typeof v==="number" ? v : (typeof v.t==="number" ? v.t : null)); }
+function eventCount(evId,sex){ var r=S.results[evId]; return athletesOf(sex).filter(function(a){return rt(r[a.id])!==null;}).length; }
+function eventRank(evId,sex){
+  var ev=EV[evId], res=S.results[evId];
+  var rows=athletesOf(sex).filter(function(a){return rt(res[a.id])!==null;}).map(function(a){var v=res[a.id]; return {a:a,t:rt(v),v:(typeof v==="object"?v:{})};});
+  var dns=athletesOf(sex).filter(function(a){var v=res[a.id]; return v && typeof v==="object" && (v.dns||v.dnf);}).map(function(a){return {a:a,v:res[a.id]};});
+  rows.sort(function(x,y){return (x.v.place||1e9)-(y.v.place||1e9) || x.t-y.t || x.a.nom.localeCompare(y.a.nom);});
+  var best=rows.length?Math.min.apply(null,rows.map(function(r){return r.t;})):0, by={};
+  rows.forEach(function(r,i){
+    r.rank= r.v.place ? r.v.place : ((i>0 && r.t===rows[i-1].t)? rows[i-1].rank : i+1);
+    r.gap= typeof r.v.gap==="number" ? r.v.gap : r.t-best;
+    r.pct= typeof r.v.pct==="number" ? r.v.pct : null;
+    r.pp=placePts(r.rank);
+    r.bonus= ev.type==="ergo" ? bonus(r.t,sex) : 0;
+    r.tier= ev.type==="ergo" ? tierIdx(r.t,sex) : -1;
+    r.total=r.pp+r.bonus; by[r.a.id]=r;
+  });
+  return {rows:rows, by:by, best:best, dns:dns};
+}
+function divOf(pos){ var k=Math.floor((pos-1)/12), r=(pos-1)%12; return r<10 ? {code:"D"+(k+1), cls:"d"+Math.min(k+1,4), joker:false, n:k+1} : {code:"J"+(k+1), cls:"j", joker:true, n:k+1}; }
+/* Classement ergo : meilleure perf des 2 tests -> rang -> points place ; bonus pour CHAQUE perf (indoor + février) */
+function ergoRank(sex){
+  var r1=S.results.ergo1, r2=S.results.ergo2;
+  var rows=athletesOf(sex).map(function(a){
+    var t1=rt(r1[a.id]), t2=rt(r2[a.id]);
+    if(t1===null&&t2===null) return null;
+    var src = t2===null ? "ergo1" : (t1===null ? "ergo2" : (t2<t1?"ergo2":"ergo1"));
+    return {a:a, t:src==="ergo1"?t1:t2, src:src, t1:t1, t2:t2};
+  }).filter(Boolean);
+  rows.sort(function(x,y){return x.t-y.t || x.a.nom.localeCompare(y.a.nom);});
+  var best=rows.length?rows[0].t:0, by={};
+  rows.forEach(function(r,i){
+    r.rank=(i>0 && r.t===rows[i-1].t)? rows[i-1].rank : i+1;
+    r.gap=r.t-best; r.pp=placePts(r.rank); r.tier=tierIdx(r.t,sex);
+    r.b1=r.t1===null?0:bonus(r.t1,sex); r.b2=r.t2===null?0:bonus(r.t2,sex); r.bonus=r.b1+r.b2;
+    r.total=r.pp+r.bonus; by[r.a.id]=r;
+  });
+  return {rows:rows, by:by, best:best};
+}
+function general(sex){
+  var ER={}; EVENTS.forEach(function(e){ ER[e.id]=eventRank(e.id,sex); });
+  var EG=ergoRank(sex);
+  var list=athletesOf(sex).map(function(a){
+    var g={a:a, ev:{}}; EVENTS.forEach(function(e){ g.ev[e.id]=ER[e.id].by[a.id]||null; });
+    g.ergo=EG.by[a.id]||null;
+    g.ergoPts = g.ergo ? g.ergo.total : 0;
+    g.skiff=(g.ev.tdr1?g.ev.tdr1.total:0)+(g.ev.tdr2?g.ev.tdr2.total:0);
+    g.nSkiff=(g.ev.tdr1?1:0)+(g.ev.tdr2?1:0);
+    g.skiffT=(g.ev.tdr1?g.ev.tdr1.t:0)+(g.ev.tdr2?g.ev.tdr2.t:0);
+    g.total=g.skiff+g.ergoPts;
+    g.n=EVENTS.filter(function(e){return g.ev[e.id];}).length;
+    return g;
+  }).filter(function(g){return g.n>0;});
+  /* égalité : le plus rapide en skiff (temps moyen des têtes de rivière courues ; sans TdR = derrière) */
+  function avgT(g){ return g.nSkiff ? g.skiffT/g.nSkiff : Infinity; }
+  list.sort(function(x,y){ return y.total-x.total || (avgT(x)-avgT(y)) || x.a.nom.localeCompare(y.a.nom); });
+  list.forEach(function(g,i){ g.pos=i+1; g.div=divOf(g.pos); });
+  return {list:list, ER:ER, EG:EG};
+}
+
+/* ---------- icônes ---------- */
+var IC = {
+  skiff:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 19c6 2.5 20 2.5 26 0"/><path d="M6 13l20 12M26 13L6 25"/><circle cx="16" cy="15" r="2.2" fill="currentColor" stroke="none"/><path d="M2 27c3 1.5 5-1.5 8 0s5 1.5 8 0 5-1.5 8 0 4 1 4 1" opacity=".5"/></svg>',
+  ergo:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="5"/><circle cx="7" cy="17" r="1.4" fill="currentColor" stroke="none"/><path d="M12 19h17M14 19v4M27 19v4M18 19v-3h4"/><path d="M7 12l3-4h4" /></svg>',
+  trophy:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5h12v6a6 6 0 0 1-12 0z"/><path d="M10 7H5v2a5 5 0 0 0 5 5M22 7h5v2a5 5 0 0 1-5 5M16 17v5M11 27h10M12 22h8v5h-8z"/></svg>',
+  list:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 8h15M12 16h15M12 24h15"/><circle cx="6" cy="8" r="1.6" fill="currentColor"/><circle cx="6" cy="16" r="1.6" fill="currentColor"/><circle cx="6" cy="24" r="1.6" fill="currentColor"/></svg>',
+  book:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 6h9a3 3 0 0 1 3 3v17a2 2 0 0 0-2-2H4zM28 6h-9a3 3 0 0 0-3 3v17a2 2 0 0 1 2-2h10z"/></svg>',
+  users:'<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="11" r="4.5"/><path d="M4 26c0-4.5 3.5-8 8-8s8 3.5 8 8"/><circle cx="22.5" cy="12" r="3.5"/><path d="M21 18.3c4 .2 7 3.4 7 7.7"/></svg>'
+};
+
+/* ---------- rendu ---------- */
+var app=document.getElementById("app");
+function tabsDef(){
+  var t=[{id:"general",label:"Classement général",icon:"list"}];
+  EVENTS.forEach(function(e){ t.push({id:e.slug,label:e.short,icon:e.type,emoji:e.emoji,ev:e.id}); });
+  t.push({id:"ergo",label:"Classement ergo",icon:"ergo"});
+  t.push({sep:true});
+  t.push({id:"reglement",label:"Règlement",icon:"book"});
+  t.push({id:"finale",label:"Divisions",icon:"trophy"});
+  if(ui.edit) t.push({id:"athletes",label:"Athlètes",icon:"users"});
+  return t;
+}
+function render(){
+  document.body.className="sex-"+ui.sex;
+  var valid=tabsDef().some(function(t){return t.id===ui.tab;}); if(!valid) ui.tab="general";
+  app.innerHTML = renderHero()+renderTabs()+'<main><div class="wrap" id="view">'+renderView()+'</div></main>';
+  updateSaveBar();
+}
+function renderHero(){
+  var td=today(), nextFound=false;
+  var steps=EVENTS.map(function(e){
+    var done=eventCount(e.id,"H")+eventCount(e.id,"F")>0, cls=done?"done":"";
+    if(!done && !nextFound && e.date>=td){ cls="next"; nextFound=true; }
+    return '<div class="step '+cls+'"><span class="dot"></span><div class="lbl">'+(e.emoji?e.emoji+" ":"")+esc(e.short)+'</div><div class="dt">'+e.label+'</div></div>';
+  }).join("");
+  steps+='<div class="step final '+(!nextFound?"next":"")+'"><span class="dot"></span><div class="lbl">🏁 Chpt Régional U17 skiff</div><div class="dt">'+FINALE.label+'</div></div>';
+  return '<div class="brand"><div class="wrap"><img src="'+LOGO+'" alt="Ligue d’Aviron des Pays de la Loire"><div class="bt"><b>Classement U17</b>Saison 2026-2027</div></div></div><header class="hero"><svg class="waves" viewBox="0 0 1200 60" preserveAspectRatio="none"><path d="M0 30 Q150 0 300 30 T600 30 T900 30 T1200 30 V60 H0Z" fill="#fff"/><path d="M0 42 Q150 15 300 42 T600 42 T900 42 T1200 42 V60 H0Z" fill="#fff" opacity=".6"/></svg><div class="wrap">'+
+    '<div class="toprow"><div><div class="kicker">Aviron · Saison 2026-2027</div><h1>Classement U17 <span>Ligue d’Aviron des Pays de la Loire</span></h1><div class="sub">Qualification pour le Championnat Régional U17 en skiff du '+FINALE.label+'</div></div>'+
+    '<div class="controls"><div class="seg"><button data-act="sex" data-sex="H" class="'+(ui.sex==="H"?"on":"")+'">Hommes</button><button data-act="sex" data-sex="F" class="'+(ui.sex==="F"?"on":"")+'">Femmes</button></div>'+((DL||!IN_CLAUDE)?'<button class="btn-pdf" data-act="pdf">📄 Export PDF</button>':'')+'</div></div>'+
+    '<div class="tl">'+steps+'</div></div></header>';
+}
+function renderTabs(){
+  return '<nav class="tabsbar"><div class="wrap tabs">'+tabsDef().map(function(t){
+    if(t.sep) return '<span class="tabsep"></span>';
+    var cnt = t.ev ? '<span class="cnt">'+eventCount(t.ev,ui.sex)+'</span>' : "";
+    return '<button class="tab '+(ui.tab===t.id?"on":"")+'" data-act="tab" data-tab="'+t.id+'">'+(t.emoji?'<span style="font-size:17px;line-height:1">'+t.emoji+'</span>':IC[t.icon])+esc(t.label)+cnt+'</button>';
+  }).join("")+'</div></nav>';
+}
+function renderView(){
+  if(ui.tab==="general") return viewGeneral();
+  if(ui.tab==="finale") return viewFinale();
+  if(ui.tab==="reglement") return viewRules();
+  if(ui.tab==="athletes") return viewAthletes();
+  if(ui.tab==="ergo") return viewErgo();
+  var ev=EVENTS.filter(function(e){return e.slug===ui.tab;})[0];
+  return ev ? viewEvent(ev) : viewGeneral();
+}
+function sexWord(){ return ui.sex==="H"?"Hommes":"Femmes"; }
+function doneCount(){ return EVENTS.filter(function(e){return eventCount(e.id,ui.sex)>0;}).length; }
+
+function viewGeneral(){
+  var G=general(ui.sex), list=G.list, dc=doneCount();
+  var td=today(), next=EVENTS.filter(function(e){return eventCount(e.id,ui.sex)===0 && e.date>=td;})[0];
+  var nd = next ? daysTo(next.date) : daysTo(FINALE.date);
+  var leader=list[0];
+  var h='<div class="kpis">'+
+    '<div class="kpi acc"><div class="k">Leader '+sexWord()+'</div><div class="v">'+(leader?leader.total+" pts":"—")+'</div><div class="s">'+(leader?esc(leader.a.nom)+(leader.a.club?" · "+esc(leader.a.club):""):"En attente des premiers résultats")+'</div></div>'+
+    '<div class="kpi"><div class="k">Athlètes classés</div><div class="v num">'+list.length+'</div><div class="s">'+sexWord()+' U17</div></div>'+
+    '<div class="kpi"><div class="k">Épreuves disputées</div><div class="v num">'+dc+' / 4</div><div class="s">'+(dc===4?"Classement définitif":"Classement provisoire")+'</div></div>'+
+    '<div class="kpi"><div class="k">Prochaine échéance</div><div class="v num">'+(nd<=0? (nd===0?"Aujourd'hui":"—") : "J-"+nd)+'</div><div class="s">'+(next?esc(next.name):"Championnat Régional U17 en skiff · "+FINALE.label)+'</div></div></div>';
+  if(dc<4 && list.length) h+='<div class="banner">⏳ <div><b>Classement provisoire</b> — établi sur '+dc+' épreuve'+(dc>1?"s":"")+' sur 4. Il évoluera jusqu\'à l\'Ergo Février.</div></div>';
+  h+='<div class="sectionhead"><div><h2 class="cond" style="margin:0;font-size:26px">Classement général · '+sexWord()+'</h2><div class="muted small">Total = TdR Angers + TdR Nantes + Classement ergo (points place sur la meilleure perf + bonus de chaque perf)</div></div>'+
+     '<input class="search" id="q" placeholder="Rechercher un athlète ou un club…" value="'+esc(ui.q)+'"></div>';
+  if(!list.length) return h+emptyBox("Aucun résultat saisi pour les "+sexWord().toLowerCase()+" pour l'instant.", ui.edit?"Ouvrez l'onglet d'une épreuve pour coller les résultats.":"Les résultats apparaîtront ici après la Tête de rivière d'Angers.");
+  var q=norm(ui.q), lastGrp=null;
+  var rows=list.map(function(g){
+    var out="";
+    if(q && norm(g.a.nom+" "+(g.a.club||"")).indexOf(q)<0) return "";
+    var cells=["tdr1","tdr2"].map(function(k){
+      var r=g.ev[k]; if(!r) return '<td class="r"><span class="dash">—</span></td>';
+      return '<td class="r pts num">'+r.total+'<small>'+ord(r.rank)+' · '+fmt(r.t)+'</small></td>';
+    }).join("") + (g.ergo ? '<td class="r pts num"><span class="ergo-on">'+g.ergo.total+'</span><small>'+ord(g.ergo.rank)+' · '+fmt(g.ergo.t)+' · +'+g.ergo.bonus+' bonus</small></td>' : '<td class="r"><span class="dash">—</span></td>');
+    return out+'<tr><td class="pos num">'+g.pos+'</td><td><div class="name">'+esc(g.a.nom)+'</div><div class="club">'+esc(g.a.club||"")+'</div></td>'+cells+
+      '<td class="r tot num">'+g.total+'</td></tr>';
+  }).join("");
+  h+='<div class="tblwrap"><table><thead><tr><th>#</th><th>Athlète</th><th class="r">🚣 TdR Angers</th><th class="r">🚣 TdR Nantes</th><th class="r">Ergo · meilleure perf</th><th class="r">Total</th></tr></thead><tbody>'+rows+'</tbody></table></div>';
+  h+='<p class="muted small" style="margin-top:10px">Colonne ergo : points de place du Classement ergo (meilleure performance des deux tests) + bonus de chaque performance ergo. Départage à égalité de points : le plus rapide en skiff (temps moyen des deux têtes de rivière).</p>';
+  return h;
+}
+function divBadge(g){
+  if(g.a.joker) return '<span class="bdg b-jk" title="Joker désigné">Joker '+esc(g.a.joker)+'</span>';
+  if(g.div.joker) return '<span class="bdg b-j" title="Places 11-12 de chaque bloc : candidats joker">Zone joker</span>';
+  return '<span class="bdg b-'+g.div.cls+'">'+g.div.code+'</span>';
+}
+function emptyBox(t,s){ return '<div class="card empty">'+IC.skiff+'<div style="font-weight:600;color:var(--ink)">'+t+'</div><div class="small">'+s+'</div></div>'; }
+
+function viewEvent(ev){
+  var R=eventRank(ev.id,ui.sex), rows=R.rows, isErgo=ev.type==="ergo";
+  var h='<div class="card"><div class="evhead"><div class="evicon">'+(ev.emoji?'<span style="font-size:32px;line-height:1">'+ev.emoji+'</span>':IC[ev.type])+'</div><div><div class="muted small" style="text-transform:uppercase;letter-spacing:.08em;font-weight:600">'+(isErgo?"Épreuve ergomètre":"Épreuve skiff")+' · '+ev.label+'</div><h2 class="cond">'+esc(ev.name)+' · '+sexWord()+'</h2>'+
+    '<div class="muted small">'+(isErgo?"Le bonus chrono de cette séance est acquis. Les points de place sont attribués dans le Classement ergo, sur la meilleure performance des deux tests.":"Points de place selon le barème. Compte intégralement au classement général.")+'</div></div>'+
+    '<div class="meta"><div><b class="num">'+rows.length+'</b><span>Classés</span></div><div><b class="num">'+(rows.length?fmt(R.best):"—")+'</b><span>Meilleur temps</span></div>'+
+    '</div></div></div>';
+  if(ui.edit) h+=editEventBox(ev);
+  if(isErgo) h+=bonusLegend(rows);
+  h+='<div id="evRank">'+eventTable(ev,R)+'</div>';
+  return h;
+}
+function eventTable(ev,R){
+  var rows=R.rows, isErgo=ev.type==="ergo", EGby=isErgo?ergoRank(ui.sex).by:{};
+  if(!rows.length) return emptyBox("Pas encore de résultats pour cette épreuve.", "Date de l'épreuve : "+ev.label+".");
+  function who(a){ return '<td><div class="name">'+esc(a.nom)+(a.cat?' <span class="club" style="font-weight:500">· '+esc(a.cat)+'</span>':'')+'</div></td><td class="club" style="font-size:13.5px;white-space:nowrap">'+esc(a.club||"")+'</td>'; }
+  var body=rows.map(function(r){
+    var p = r.rank<=3 ? '<span class="medal m'+r.rank+'">'+r.rank+'</span>' : r.rank;
+    return '<tr><td class="pos num">'+p+'</td>'+who(r.a)+
+      '<td class="r num" style="font-weight:600">'+fmt(r.t)+'</td>'+
+      '<td class="r num muted">'+(r.gap>0?fmtGap(r.gap):'')+'</td>'+
+      (isErgo ? '<td class="r"><span class="chip">'+TIERS[ui.sex][r.tier].l+' · +'+r.bonus+'</span></td><td class="c">'+(EGby[r.a.id]&&EGby[r.a.id].src===ev.id?'<span class="bdg b-d4">✓ Meilleure perf</span>':'<span class="dash">—</span>')+'</td></tr>'
+              : '<td class="r num">'+(r.pct!==null?r.pct.toFixed(2).replace(".",",")+' %':'<span class="dash">—</span>')+'</td><td class="r tot num">'+r.total+'</td></tr>');
+  }).join("");
+  body+=(R.dns||[]).map(function(d){ return '<tr style="opacity:.6"><td class="pos num">–</td>'+who(d.a)+'<td class="r small" colspan="4">'+(d.v.dnf?"DNF":"DNS")+' · non classé</td></tr>'; }).join("");
+  return '<div class="tblwrap"><table><thead><tr><th>Place</th><th>Athlète</th><th>Club</th><th class="r">Temps</th><th class="r">Écart</th>'+(isErgo?'<th class="r">Tranche bonus</th><th class="c">Meilleure perf</th>':'<th class="r">%</th><th class="r">Points</th>')+'</tr></thead><tbody>'+body+'</tbody></table></div>'+
+    (isErgo?'':'<p class="muted small" style="margin-top:10px">Temps, écart et % tels que publiés dans les résultats officiels. Points = barème de place du classement.</p>');
+}
+function viewErgo(){
+  var E=ergoRank(ui.sex), rows=E.rows;
+  var h='<div class="card"><div class="evhead"><div class="evicon">'+IC.ergo+'</div><div><div class="muted small" style="text-transform:uppercase;letter-spacing:.08em;font-weight:600">Chpt Régional Indoor + Ergo Février</div><h2 class="cond">Classement ergo · '+sexWord()+'</h2>'+
+    '<div class="muted small">Chaque athlète est classé sur sa meilleure performance des deux tests. Points = points de place + bonus obtenu à chaque test.</div></div>'+
+    '<div class="meta"><div><b class="num">'+rows.length+'</b><span>Classés</span></div><div><b class="num">'+(rows.length?fmt(E.best):"—")+'</b><span>Meilleur temps</span></div></div></div></div>';
+  if(!rows.length) return h+emptyBox("Pas encore de performance ergo.","Le classement se remplira après le Championnat régional indoor du 6 décembre.");
+  var body=rows.map(function(r){
+    var p = r.rank<=3 ? '<span class="medal m'+r.rank+'">'+r.rank+'</span>' : r.rank;
+    function tc(t,k){ return t===null?'<span class="dash">—</span>':'<span class="'+(r.src===k?"ergo-on":"ergo-off")+'">'+fmt(t)+'</span>'; }
+    return '<tr><td class="pos num">'+p+'</td><td><div class="name">'+esc(r.a.nom)+'</div><div class="club">'+esc(r.a.club||"")+'</div></td>'+
+      '<td class="r num" style="font-weight:600">'+fmt(r.t)+(r.rank>1?'<div class="club">'+fmtGap(r.gap)+'</div>':'')+'</td>'+
+      '<td class="r num">'+tc(r.t1,"ergo1")+'</td><td class="r num">'+tc(r.t2,"ergo2")+'</td>'+
+      '<td class="r num">'+r.pp+'</td><td class="r">'+(r.t1===null?'<span class="dash">—</span>':'<span class="chip">+'+r.b1+'</span>')+'</td><td class="r">'+(r.t2===null?'<span class="dash">—</span>':'<span class="chip">+'+r.b2+'</span>')+'</td><td class="r tot num">'+r.total+'</td></tr>';
+  }).join("");
+  return h+'<div class="tblwrap"><table><thead><tr><th>Rang</th><th>Athlète</th><th class="r">Meilleure perf</th><th class="r">Chpt Régional Indoor</th><th class="r">Ergo Février</th><th class="r">Pts place</th><th class="r">Bonus Indoor</th><th class="r">Bonus Février</th><th class="r">Points</th></tr></thead><tbody>'+body+'</tbody></table></div>';
+}
+function bonusLegend(rows){
+  var counts=TIERS[ui.sex].map(function(){return 0;}); rows.forEach(function(r){counts[r.tier]++;});
+  return '<div class="card"><h3 class="cond">Bonus chrono brut · '+sexWord()+'</h3><div class="tiers">'+TIERS[ui.sex].map(function(t,i){
+    return '<div class="tier"><div class="t num">'+t.l+'</div><div class="p">+'+t.p+'</div><div class="n">'+counts[i]+' athlète'+(counts[i]>1?"s":"")+'</div></div>';
+  }).join("")+'</div></div>';
+}
+function editEventBox(ev){
+  var res=S.results[ev.id], ath=athletesOf(ui.sex).slice().sort(function(a,b){return a.nom.localeCompare(b.nom);});
+  var inputs=ath.map(function(a){ var t=res[a.id];
+    return '<tr><td><div class="name">'+esc(a.nom)+'</div><div class="club">'+esc(a.club||"")+'</div></td><td class="r"><input class="inp time '+(typeof t==="number"?"ok":"")+'" data-time="'+a.id+'" data-ev="'+ev.id+'" value="'+(typeof t==="number"?fmt(t):"")+'" placeholder="m\'ss&quot;d"></td></tr>';
+  }).join("");
+  return '<div class="editbox"><h3 class="cond">✎ Saisie des résultats · '+esc(ev.short)+' · '+sexWord()+'</h3>'+
+    '<div class="grid2"><div><div class="small muted" style="margin-bottom:6px">Collez une ligne par athlète depuis un tableur : <b>Nom Prénom ; Club ; Temps</b> (séparateur tabulation ou point-virgule). Formats de temps acceptés : 6\'32"4 · 6:32.4 · 6.32.4 · 18:05,2. Les athlètes inconnus sont créés automatiquement ('+sexWord().toLowerCase()+').</div>'+
+    '<textarea id="bulk" placeholder="DUPONT Léa;AC Angers;7:41.2&#10;MARTIN Zoé;Nantes AC;7:38.9"></textarea>'+
+    '<div class="row" style="margin-top:8px"><button class="btn pri" data-act="bulk" data-ev="'+ev.id+'">Importer les résultats</button><button class="btn danger" data-act="clearev" data-ev="'+ev.id+'">Effacer les résultats '+sexWord().toLowerCase()+'</button></div></div>'+
+    '<div><div class="small muted" style="margin-bottom:6px">Ou saisie / correction individuelle (laisser vide = absent) :</div><div class="tblwrap" style="max-height:300px;overflow:auto"><table><tbody>'+(inputs||'<tr><td class="muted small">Aucun athlète '+sexWord().toLowerCase()+' enregistré. Utilisez l\'import ci-contre.</td></tr>')+'</tbody></table></div></div></div></div>';
+}
+
+function buildDivisions(list){
+  var pool=list.slice(), divs=[], k=0;
+  while(pool.length){
+    k++; var code="D"+k;
+    var jk=pool.filter(function(g){return g.a.joker===code;}).slice(0,2);
+    pool=pool.filter(function(g){return jk.indexOf(g)<0;});
+    var sure=pool.slice(0,10); pool=pool.slice(10);
+    divs.push({n:k, sure:sure, jk:jk});
+  }
+  return divs;
+}
+function viewFinale(){
+  var G=general(ui.sex), list=G.list, dc=doneCount();
+  var h='<div class="sectionhead"><div><h2 class="cond" style="margin:0;font-size:26px">Championnat Régional U17 en skiff · '+FINALE.label+' · '+sexWord()+'</h2><div class="muted small">Chaque division : 10 qualifiés au classement général + 2 jokers montés de la division inférieure sur décision de la Ligue d’Aviron des Pays de la Loire.</div></div></div>';
+  if(dc<4) h+='<div class="banner">⏳ <div><b>Projection</b> sur la base du classement provisoire ('+dc+'/4 épreuves). Les divisions définitives seront arrêtées après l\'Ergo Février.</div></div>';
+  if(!list.length) return h+emptyBox("Aucun athlète classé pour l'instant.","Les divisions se rempliront au fil des épreuves.");
+  var divs=buildDivisions(list), cards="";
+  divs.forEach(function(d){
+    var cls="d"+Math.min(d.n,4), last=d.n===divs.length;
+    var li=d.sure.map(function(g){return finLi(g);}).join("");
+    var jl=d.jk.map(function(g){return finLi(g,"↑ de D"+(d.n+1));}).join("");
+    if(!last) for(var s=d.jk.length;s<2;s++) jl+='<div class="slot">Place '+(11+s)+' · joker à désigner par la Ligue d’Aviron des Pays de la Loire (parmi la Division '+(d.n+1)+')</div>';
+    cards+='<div class="divcard '+cls+'"><div class="dh"><h3 class="cond">Division '+d.n+'</h3><span class="muted small">'+(d.sure.length+d.jk.length)+' / 12 bateaux</span></div>'+
+      '<div class="sub2" style="border-top:0">Qualifiés au classement</div><ol>'+(li||'<li class="muted small">—</li>')+'</ol>'+
+      (last && !d.jk.length ? '' : '<div class="sub2">Jokers · montent de la Division '+(d.n+1)+' ('+d.jk.length+'/2)</div><ol>'+jl+'</ol>')+'</div>';
+  });
+  h+='<div class="grid3">'+cards+'</div>';
+  h+='<p class="muted small">Les 10 premiers sont qualifiés en Division 1. Les places 11 et 12 de chaque division sont attribuées par la Ligue d’Aviron des Pays de la Loire à deux rameurs de la division inférieure (jokers). Un joker qui monte libère sa place : la division qu\'il quitte est complétée par le suivant au classement.</p>';
+  return h;
+}
+function finLi(g,jkLabel){
+  return '<li><span class="p num">'+g.pos+'</span><span class="nm"><div class="name">'+esc(g.a.nom)+'</div><div class="club">'+esc(g.a.club||"")+'</div></span>'+(jkLabel?'<span class="bdg b-jk">'+jkLabel+'</span>':'<span class="pts num">'+g.total+'</span>')+'</li>';
+}
+function jokerOpts(cur){ var o='<option value="">'+(cur?"Retirer joker":"Joker ?")+'</option>'; for(var k=1;k<=6;k++) o+='<option value="D'+k+'" '+(cur==="D"+k?"selected":"")+'>Joker D'+k+'</option>'; return o; }
+
+function viewRules(){
+  var pts=PLACE.map(function(p,i){return '<div><span>'+ord(i+1)+'</span><b>'+p+'</b></div>';}).join("");
+  function btab(sex){ return '<table class="btable"><thead><tr><th>Chrono 2000 m</th><th class="r">Bonus</th></tr></thead><tbody>'+TIERS[sex].map(function(t){return '<tr><td class="num">'+t.l+'</td><td class="r"><span class="chip">+'+t.p+'</span></td></tr>';}).join("")+'</tbody></table>'; }
+  var cal=EVENTS.map(function(e){return '<tr><td class="num" style="white-space:nowrap">'+e.label+'</td><td><b>'+esc(e.name)+'</b></td><td>'+(e.type==="ergo"?"Ergomètre":"Skiff")+'</td><td class="muted small">'+(e.type==="ergo"?"Bonus chrono · meilleure perf des 2 tests → Classement ergo":"Points place · compte toujours")+'</td></tr>';}).join("")+
+    '<tr><td class="num">'+FINALE.label+'</td><td><b>Championnat Régional U17 en skiff</b></td><td>Skiff</td><td class="muted small">Courses par divisions</td></tr>';
+  return '<div class="grid2"><div>'+
+    '<div class="card"><h2 class="cond">Le principe</h2><p class="muted" style="margin-top:4px">Le classement U17 de la Ligue d’Aviron des Pays de la Loire classe séparément hommes et femmes au fil de 4 épreuves. Il sert à composer les divisions du Championnat Régional U17 en skiff du 14 février 2027.</p>'+
+    '<div class="formula">Total = <em>TdR Angers</em> + <em>TdR Nantes</em> + <em>Classement ergo</em></div>'+
+    '<div class="rule"><span class="n">1</span><div><b>Points de place.</b> À chaque épreuve, le classement donne des points selon le barème (200 pts au vainqueur).</div></div>'+
+    '<div class="rule"><span class="n">2</span><div><b>Classement ergo.</b> Après les deux tests, chaque athlète est classé sur sa meilleure performance ergo. Les points de place sont attribués d’après ce classement, une seule fois pour l’ensemble des deux tests.</div></div>'+
+    '<div class="rule"><span class="n">3</span><div><b>Bonus ergo.</b> Un bonus est attribué pour chaque performance ergo selon son chrono brut : celui du Chpt Régional Indoor et celui de l\'Ergo Février s\'additionnent.</div></div>'+
+    '<div class="rule"><span class="n">4</span><div><b>Les deux têtes de rivière comptent.</b> Une absence vaut 0 point.</div></div>'+
+    '<div class="rule"><span class="n">5</span><div><b>Départage.</b> À égalité de points, le plus rapide en skiff passe devant (temps moyen des deux têtes de rivière).</div></div></div>'+
+    '<div class="card"><h2 class="cond">Divisions du Championnat Régional U17 en skiff</h2><p class="muted" style="margin-top:4px">Chaque division réunit 12 skiffs : 10 qualifiés au classement + 2 jokers montés de la division inférieure.</p>'+
+    '<div class="div-strip"><div style="flex:10;background:var(--d1-l);color:#8a6806">D1 · 1–10</div><div style="flex:3;background:var(--j-l);color:#94560f">+2 jokers ↑ D2</div><div style="flex:10;background:var(--d2-l);color:#4d5a70">D2 · 10 suivants</div><div style="flex:3;background:var(--j-l);color:#94560f">+2 jokers ↑ D3</div><div style="flex:4;background:var(--d3-l);color:#8a4a22">D3 …</div></div>'+
+    '<p class="small muted">Les 10 premiers sont en Division 1, sans discussion. Les places 11 et 12 de la D1 reviennent, sur décision de la Ligue d’Aviron des Pays de la Loire, à deux rameurs de la Division 2 (jokers). Les 10 rameurs suivants au classement (hors jokers) forment la D2, complétée de la même façon par 2 jokers venus de la D3, et ainsi de suite.</p></div>'+
+    '</div><div>'+
+    '<div class="card"><h2 class="cond">Barème des points de place</h2><div class="pts-grid num" style="margin-top:8px">'+pts+'</div><p class="small muted">Au-delà de la 20e place : −2 pts par place (21e = 104, 22e = 102…, minimum 1 pt). Ex æquo : mêmes points.</p></div>'+
+    '<div class="card"><h2 class="cond">Bonus chrono ergomètre</h2><div class="grid2" style="gap:12px;margin-top:6px"><div><div class="bdg" style="background:var(--H-l);color:var(--H);margin-bottom:6px">Hommes</div>'+btab("H")+'</div><div><div class="bdg" style="background:var(--F-l);color:var(--F);margin-bottom:6px">Femmes</div>'+btab("F")+'</div></div><p class="small muted">Borne basse incluse dans la tranche inférieure : 6\'20"0 exactement = 80 pts.</p></div>'+
+    '</div></div>'+
+    '<div class="card"><h2 class="cond">Calendrier</h2><div class="tblwrap" style="border:0"><table><tbody>'+cal+'</tbody></table></div></div>';
+}
+
+function viewAthletes(){
+  var ath=athletesOf(ui.sex).slice().sort(function(a,b){return a.nom.localeCompare(b.nom);});
+  var rows=ath.map(function(a){
+    var n=EVENTS.filter(function(e){return rt(S.results[e.id][a.id])!==null;}).length;
+    return '<tr><td><input class="inp" data-field="nom" data-id="'+a.id+'" value="'+esc(a.nom)+'"></td><td><input class="inp" data-field="club" data-id="'+a.id+'" value="'+esc(a.club||"")+'"></td>'+
+      '<td><select class="inp" data-field="sexe" data-id="'+a.id+'"><option value="H" '+(a.sexe==="H"?"selected":"")+'>Homme</option><option value="F" '+(a.sexe==="F"?"selected":"")+'>Femme</option></select></td>'+
+      '<td><select class="inp" data-joker="'+a.id+'">'+jokerOpts(a.joker)+'</select></td><td class="c num">'+n+'/4</td>'+
+      '<td class="r"><button class="btn sm danger" data-act="del" data-id="'+a.id+'">Supprimer</button></td></tr>';
+  }).join("");
+  return '<div class="editbox"><h3 class="cond">Ajouter des athlètes · '+sexWord()+'</h3><div class="row"><input class="inp" id="newNom" placeholder="NOM Prénom" style="max-width:260px"><input class="inp" id="newClub" placeholder="Club" style="max-width:220px"><button class="btn pri" data-act="add">Ajouter</button></div>'+
+    '<div class="small muted" style="margin:10px 0 6px">Ou collez une liste (Nom Prénom ; Club), une ligne par athlète :</div><textarea id="bulkAth" style="min-height:80px"></textarea><div class="row" style="margin-top:8px"><button class="btn" data-act="bulkath">Importer la liste</button></div></div>'+
+    '<div class="tblwrap"><table><thead><tr><th>Athlète</th><th>Club</th><th>Catégorie</th><th>Joker Finale</th><th class="c">Épreuves</th><th></th></tr></thead><tbody>'+(rows||'<tr><td colspan="6" class="muted">Aucun athlète.</td></tr>')+'</tbody></table></div>'+
+    '<div class="card" style="margin-top:16px"><h3 class="cond">Sauvegarde des données</h3><p class="small muted" style="margin-top:0">Copie de secours de toutes les données (hommes et femmes) au format JSON, ou restauration depuis une copie.</p><div class="row"><button class="btn" data-act="export">Copier les données</button><button class="btn" data-act="showimport">Restaurer…</button></div><div id="impbox" style="display:none;margin-top:10px"><textarea id="impjson" placeholder="Collez ici le JSON exporté"></textarea><div class="row" style="margin-top:8px"><button class="btn dark" data-act="import">Remplacer toutes les données</button></div></div></div>';
+}
+
+/* ---------- actions ---------- */
+function markDirty(){ ui.dirty=true; updateSaveBar(); }
+function updateSaveBar(){}
+var toastT; function toast(msg){ var t=document.getElementById("toast"); t.innerHTML=msg; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove("show");},3200); }
+function findOrCreate(nom,club,sex){
+  var k=norm(nom); var a=S.athletes.filter(function(x){return x.sexe===sex && norm(x.nom)===k;})[0];
+  if(a){ if(club && !a.club) a.club=club; return {a:a,created:false}; }
+  a={id:uid(), nom:nom.trim(), club:(club||"").trim(), sexe:sex, joker:null}; S.athletes.push(a); return {a:a,created:true};
+}
+function splitLine(line){ var f = line.indexOf("\t")>=0 ? line.split("\t") : line.split(";"); if(f.length===1) f=line.split(/\s{2,}/); return f.map(function(x){return x.trim();}).filter(function(x){return x!=="";}); }
+function bulkImport(evId){
+  var txt=(document.getElementById("bulk")||{}).value||""; var ok=0,cr=0,bad=[];
+  txt.split(/\r?\n/).forEach(function(line,i){
+    if(!line.trim()) return; var f=splitLine(line);
+    if(f.length<2){ bad.push(i+1); return; }
+    var t=parseTime(f[f.length-1]);
+    if(typeof t!=="number"||isNaN(t)){ bad.push(i+1); return; }
+    var nom=f[0], club=f.slice(1,-1).join(" ");
+    if(/^\d+$/.test(nom) && f.length>=3){ nom=f[1]; club=f.slice(2,-1).join(" "); }
+    var r=findOrCreate(nom,club,ui.sex); if(r.created) cr++;
+    S.results[evId][r.a.id]=t; ok++;
+  });
+  markDirty(); render();
+  toast("✓ "+ok+" résultat"+(ok>1?"s":"")+" importé"+(ok>1?"s":"")+(cr?" · "+cr+" athlète"+(cr>1?"s":"")+" créé"+(cr>1?"s":""):"")+(bad.length?" · lignes ignorées : "+bad.slice(0,8).join(", ")+(bad.length>8?"…":""):""));
+}
+
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]"); if(!b) return; var act=b.getAttribute("data-act");
+  if(act==="tab"){ ui.tab=b.getAttribute("data-tab"); try{ history.replaceState(null,"","#"+ui.tab); }catch(x){ location.hash=ui.tab; } render(); window.scrollTo({top:0}); }
+  else if(act==="sex"){ ui.sex=b.getAttribute("data-sex"); saveUi(); render(); }
+  else if(act==="bulk"){ bulkImport(b.getAttribute("data-ev")); }
+  else if(act==="clearev"){
+    if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent="Confirmer l'effacement ?"; setTimeout(function(){ if(b.isConnected){ b.classList.remove("arm"); b.textContent="Effacer les résultats "+sexWord().toLowerCase(); } },3500); return; }
+    var ev=b.getAttribute("data-ev"); athletesOf(ui.sex).forEach(function(a){ delete S.results[ev][a.id]; }); markDirty(); render(); toast("Résultats effacés");
+  }
+  else if(act==="add"){ var n=document.getElementById("newNom").value.trim(); if(!n){ toast("Indiquez un nom"); return; } var r=findOrCreate(n,document.getElementById("newClub").value,ui.sex); markDirty(); render(); toast(r.created?"✓ Athlète ajouté":"Cet athlète existe déjà"); }
+  else if(act==="bulkath"){ var c=0; (document.getElementById("bulkAth").value||"").split(/\r?\n/).forEach(function(l){ var f=splitLine(l); if(f[0]){ if(findOrCreate(f[0],f.slice(1).join(" "),ui.sex).created) c++; } }); markDirty(); render(); toast("✓ "+c+" athlète(s) ajouté(s)"); }
+  else if(act==="del"){
+    if(!b.classList.contains("arm")){ b.classList.add("arm"); b.textContent="Confirmer ?"; setTimeout(function(){ if(b.isConnected){ b.classList.remove("arm"); b.textContent="Supprimer"; } },3500); return; }
+    var id=b.getAttribute("data-id"); S.athletes=S.athletes.filter(function(a){return a.id!==id;}); EVENTS.forEach(function(ev){ delete S.results[ev.id][id]; }); markDirty(); render();
+  }
+  else if(act==="export"){ var j=JSON.stringify(S,null,1); try{ navigator.clipboard.writeText(j).then(function(){toast("✓ Données copiées dans le presse-papiers");},function(){fallbackCopy(j);}); }catch(x){ fallbackCopy(j); } }
+  else if(act==="showimport"){ document.getElementById("impbox").style.display="block"; }
+  else if(act==="import"){
+    try{ var d=JSON.parse(document.getElementById("impjson").value); if(!d||!Array.isArray(d.athletes)||!d.results) throw 0; S=d; ["tdr1","ergo1","tdr2","ergo2"].forEach(function(k){ if(!S.results[k]) S.results[k]={}; }); markDirty(); render(); toast("✓ Données restaurées — pensez à enregistrer"); }
+    catch(x){ toast("⚠️ JSON invalide"); }
+  }
+});
+function fallbackCopy(j){ document.getElementById("impbox").style.display="block"; var ta=document.getElementById("impjson"); ta.value=j; ta.select(); toast("Sélectionnez et copiez le texte affiché (Ctrl/Cmd + C)"); }
+document.addEventListener("input",function(e){
+  if(e.target.id==="q"){ ui.q=e.target.value; var pos=e.target.selectionStart; document.getElementById("view").innerHTML=viewGeneral(); var q=document.getElementById("q"); q.focus(); try{q.setSelectionRange(pos,pos);}catch(x){} }
+});
+document.addEventListener("change",function(e){
+  var t=e.target;
+  if(t.hasAttribute("data-time")){
+    var id=t.getAttribute("data-time"), ev=t.getAttribute("data-ev"), v=parseTime(t.value);
+    if(v===null){ delete S.results[ev][id]; t.className="inp time"; }
+    else if(isNaN(v)){ t.className="inp time err"; toast("Format de temps non reconnu"); return; }
+    else { S.results[ev][id]=v; t.value=fmt(v); t.className="inp time ok"; }
+    markDirty(); document.getElementById("evRank").innerHTML=eventTable(EV[ev],eventRank(ev,ui.sex));
+  } else if(t.hasAttribute("data-joker")){
+    var a=S.athletes.filter(function(x){return x.id===t.getAttribute("data-joker");})[0]; if(a){ a.joker=t.value||null; markDirty(); if(ui.tab==="finale") render(); }
+  } else if(t.hasAttribute("data-field")){
+    var a2=S.athletes.filter(function(x){return x.id===t.getAttribute("data-id");})[0]; if(!a2) return;
+    var f=t.getAttribute("data-field"); a2[f]= f==="nom" ? (t.value.trim()||a2.nom) : t.value.trim(); markDirty(); if(f==="sexe") render();
+  }
+});
+function fromHash(){ var h=(location.hash||"").replace("#",""); if(h && tabsDef().some(function(t){return t.id===h;})) ui.tab=h; }
+window.addEventListener("hashchange",function(){ fromHash(); render(); });
+
+/* ---------- export PDF ---------- */
+var DL=null, dlReady=false, IN_CLAUDE=!!(window.claude && typeof window.claude.use==="function");
+(window.claude && typeof window.claude.use==="function" ? window.claude.use("downloads").catch(function(){return null;}) : Promise.resolve(null))
+  .then(function(d){ DL=d; dlReady=true; if(DL) render(); });
+function loadScript(src){ return new Promise(function(res,rej){ var s=document.createElement("script"); s.src=src; s.onload=res; s.onerror=function(){rej(new Error("load"));}; document.head.appendChild(s); }); }
+var libP=null;
+function loadPdfLib(){
+  if(!libP) libP = loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js")
+    .then(function(){ return loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"); })
+    .catch(function(e){ libP=null; throw e; });
+  return libP;
+}
+function exportPanel(){
+  return '<div class="ovl" id="pdfovl"><div class="dlg"><h3 class="cond" style="margin:0 0 4px;font-size:24px">📄 Export PDF</h3><p class="muted small" style="margin:0 0 14px">Génère un document A4 avec le logo de la Ligue d’Aviron des Pays de la Loire.</p>'+
+    '<div class="flbl">Catégorie</div><div class="opts" data-grp="sex">'+
+      '<label><input type="radio" name="psex" value="'+ui.sex+'" checked> '+(ui.sex==="H"?"Hommes":"Femmes")+'</label>'+
+      '<label><input type="radio" name="psex" value="'+(ui.sex==="H"?"F":"H")+'"> '+(ui.sex==="H"?"Femmes":"Hommes")+'</label>'+
+      '<label><input type="radio" name="psex" value="HF"> Hommes et femmes</label></div>'+
+    '<div class="flbl">Contenu</div><div class="opts">'+
+      '<label><input type="radio" name="pcnt" value="gen" checked> Classement général</label>'+
+      '<label><input type="radio" name="pcnt" value="all"> Classement général + résultats de chaque épreuve</label></div>'+
+    '<div class="row" style="justify-content:flex-end;margin-top:16px"><button class="btn" data-act="pdfclose">Annuler</button><button class="btn pri" data-act="pdfgo" id="pdfgo">Télécharger le PDF</button></div></div></div>';
+}
+function rgb(h){ return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]; }
+function buildPdf(sexes,full){
+  var J=window.jspdf.jsPDF, doc=new J({unit:"mm",format:"a4"}), W=210, M=12;
+  var NAVY=rgb("#1e2a5e"), GREEN=rgb("#6cc2a2"), GREY=rgb("#647189");
+  var d=new Date(), dstr=String(d.getDate()).padStart(2,"0")+"/"+String(d.getMonth()+1).padStart(2,"0")+"/"+d.getFullYear();
+  var first=true;
+  function header(){
+    try{ doc.addImage(LOGO,"PNG",M,8,48,12); }catch(e){}
+    doc.setFont("helvetica","bold"); doc.setFontSize(13); doc.setTextColor.apply(doc,NAVY);
+    doc.text("Classement U17 - Saison 2026-2027",W-M,13,{align:"right"});
+    doc.setFont("helvetica","normal"); doc.setFontSize(8.5); doc.setTextColor.apply(doc,GREY);
+    doc.text("Ligue d'Aviron des Pays de la Loire",W-M,18,{align:"right"});
+    doc.setDrawColor.apply(doc,GREEN); doc.setLineWidth(.6); doc.line(M,23,W-M,23);
+  }
+  function title(t,sub){
+    if(!first){ doc.addPage(); } first=false; header();
+    doc.setFont("helvetica","bold"); doc.setFontSize(16); doc.setTextColor.apply(doc,NAVY); doc.text(t,M,32);
+    var y=32;
+    if(sub){ doc.setFont("helvetica","normal"); doc.setFontSize(9); doc.setTextColor.apply(doc,GREY); var ls=doc.splitTextToSize(sub,W-2*M); doc.text(ls,M,38); y=38+ls.length*4; }
+    return y+2;
+  }
+  function table(y,head,body,colStyles,hi){
+    doc.autoTable({startY:y,head:[head],body:body,margin:{left:M,right:M,top:28,bottom:14},theme:"grid",
+      styles:{font:"helvetica",fontSize:8.5,cellPadding:1.6,lineColor:[226,231,238],lineWidth:.15,textColor:[20,33,58]},
+      headStyles:{fillColor:NAVY,textColor:255,fontStyle:"bold",fontSize:8},
+      alternateRowStyles:{fillColor:[246,248,251]},columnStyles:colStyles||{},
+      didParseCell:function(c){ if(c.section==="body" && hi && c.column.index===hi) c.cell.styles.fontStyle="bold"; },
+      didDrawPage:function(){ header(); }
+    });
+  }
+  var dc=function(sx){ return EVENTS.filter(function(e){return eventCount(e.id,sx)>0;}).length; };
+  sexes.forEach(function(sx){
+    var SW = sx==="H"?"Hommes":"Femmes", G=general(sx);
+    var y=title("Classement général - U17 "+SW, (dc(sx)<4?"Classement provisoire ("+dc(sx)+"/4 épreuves). ":"Classement définitif. ")+"Total = TdR Angers + TdR Nantes + Classement ergo (points de place sur la meilleure performance + bonus de chaque performance).");
+    var body=G.list.map(function(g){
+      function c(k){ var r=g.ev[k]; return r? r.total+" ("+ord(r.rank)+")" : "-"; }
+      return [g.pos, g.a.nom, g.a.club||"", c("tdr1"), c("tdr2"), g.ergo? g.ergo.total+" ("+ord(g.ergo.rank)+")" : "-", g.total];
+    });
+    table(y,["#","Athlète","Club","TdR Angers","TdR Nantes","Ergo","Total"],body.length?body:[["","Aucun résultat","","","","",""]],{0:{halign:"center",cellWidth:9},3:{halign:"right"},4:{halign:"right"},5:{halign:"right"},6:{halign:"right",cellWidth:14}},6);
+    if(!full) return;
+    EVENTS.forEach(function(ev){
+      var R=eventRank(ev.id,sx); if(!R.rows.length) return;
+      var isE=ev.type==="ergo", EG=isE?ergoRank(sx).by:null;
+      var yy=title(ev.name+" - U17 "+SW, ev.label+" · "+R.rows.length+" classés"+(isE?" · bonus chrono acquis à cette séance ; les points de place sont attribués au Classement ergo (meilleure performance)":""));
+      var b=R.rows.map(function(r){
+        return isE ? [r.rank,r.a.nom,r.a.club||"",fmt(r.t),r.gap>0?fmtGap(r.gap):"",TIERS[sx][r.tier].l.replace("–","-")+" : +"+r.bonus, EG[r.a.id]&&EG[r.a.id].src===ev.id?"Oui":"Non"]
+                   : [r.rank,r.a.nom,r.a.cat||"",r.a.club||"",fmt(r.t),r.gap>0?fmtGap(r.gap):"",r.pct!==null?r.pct.toFixed(2).replace(".",",")+" %":"",r.total];
+      });
+      (R.dns||[]).forEach(function(x){ b.push(isE?["-",x.a.nom,x.a.club||"","DNS","","",""]:["-",x.a.nom,x.a.cat||"",x.a.club||"","DNS","","",""]); });
+      if(isE) table(yy,["Rang","Athlète","Club","Temps","Écart","Tranche bonus","Meilleure perf"],b,{0:{halign:"center",cellWidth:11},3:{halign:"right"},4:{halign:"right"}});
+      else table(yy,["Place","Athlète","Cat.","Club","Temps","Écart","%","Points"],b,{0:{halign:"center",cellWidth:11},2:{cellWidth:11},4:{halign:"right"},5:{halign:"right"},6:{halign:"right"},7:{halign:"right",cellWidth:14}},7);
+    });
+    var E=ergoRank(sx);
+    if(E.rows.length){
+      var y3=title("Classement ergo - U17 "+SW,"Classement sur la meilleure performance des deux tests (Chpt Régional Indoor et Ergo Février). Points = points de place + bonus de chaque performance.");
+      table(y3,["Rang","Athlète","Club","Meilleure perf","Indoor","Ergo Fév.","Pts place","Bonus Indoor","Bonus Fév.","Points"],E.rows.map(function(r){
+        return [r.rank,r.a.nom,r.a.club||"",fmt(r.t),r.t1===null?"-":fmt(r.t1),r.t2===null?"-":fmt(r.t2),r.pp,r.t1===null?"-":"+"+r.b1,r.t2===null?"-":"+"+r.b2,r.total];
+      }),{0:{halign:"center",cellWidth:11},3:{halign:"right"},4:{halign:"right"},5:{halign:"right"},6:{halign:"right"},7:{halign:"right"},8:{halign:"right"},9:{halign:"right"}},9);
+    }
+  });
+  var n=doc.internal.getNumberOfPages();
+  for(var i=1;i<=n;i++){ doc.setPage(i); doc.setFont("helvetica","normal"); doc.setFontSize(7.5); doc.setTextColor.apply(doc,GREY);
+    doc.text("Classement U17 – Ligue d’Aviron des Pays de la Loire · édité le "+dstr,M,290); doc.text(i+" / "+n,W-M,290,{align:"right"}); }
+  return doc.output("arraybuffer");
+}
+function doExport(){
+  var sv=(document.querySelector('input[name=psex]:checked')||{}).value||ui.sex, full=((document.querySelector('input[name=pcnt]:checked')||{}).value==="all");
+  var sexes= sv==="HF"?["H","F"]:[sv];
+  var btn=document.getElementById("pdfgo"); btn.disabled=true; btn.textContent="Génération…";
+  loadPdfLib().then(function(){
+    var buf=buildPdf(sexes,full);
+    var fn="Classement-U17-PdL-"+(sv==="HF"?"Hommes-Femmes":(sv==="H"?"Hommes":"Femmes"))+(full?"-complet":"")+"-"+today()+".pdf";
+    closePanel();
+    if(!DL){ var url=URL.createObjectURL(new Blob([buf],{type:"application/pdf"})); var ln=document.createElement("a"); ln.href=url; ln.download=fn; document.body.appendChild(ln); ln.click(); ln.remove(); setTimeout(function(){URL.revokeObjectURL(url);},4000); toast("✓ PDF téléchargé"); return; }
+    return DL.save({filename:fn,data:buf}).then(function(){ toast("✓ PDF téléchargé"); });
+  }).catch(function(e){
+    var c=e&&e.code;
+    if(c==="declined") return;
+    toast(c==="rate_limited"?"Un téléchargement est déjà en cours.":(e&&e.message==="load"?"⚠️ Impossible de charger le générateur PDF. Vérifiez la connexion.":"⚠️ Export impossible dans cette vue."));
+  }).then(function(){ var b=document.getElementById("pdfgo"); if(b){ b.disabled=false; b.textContent="Télécharger le PDF"; } });
+}
+function openPanel(){ closePanel(); var w=document.createElement("div"); w.id="pdfwrap"; w.innerHTML=exportPanel(); document.body.appendChild(w); loadPdfLib().catch(function(){}); }
+function closePanel(){ var w=document.getElementById("pdfwrap"); if(w) w.remove(); }
+document.addEventListener("click",function(e){
+  var b=e.target.closest("[data-act]");
+  if(!b){ if(e.target.id==="pdfovl") closePanel(); return; }
+  var act=b.getAttribute("data-act");
+  if(act==="pdf") openPanel(); else if(act==="pdfclose") closePanel(); else if(act==="pdfgo") doExport();
+});
+/* intégration iframe (site de la Ligue) : envoie la hauteur de la page au site parent */
+(function(){
+  if(!window.parent || window.parent===window || (window.claude && typeof window.claude.use==="function")) return;
+  var last=0;
+  function send(){ var h=Math.ceil(document.documentElement.scrollHeight); if(h!==last){ last=h; try{ window.parent.postMessage({type:"classement-u17-height",h:h},"*"); }catch(e){} } }
+  try{ new ResizeObserver(send).observe(document.body); }catch(e){ setInterval(send,800); }
+  window.addEventListener("load",send); setTimeout(send,300);
+})();
+fromHash(); render();
+window.__u17 = {general:general, eventRank:eventRank, parseTime:parseTime, fmt:fmt};
+})();
+</script>
+</body>
+</html>
